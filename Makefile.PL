@@ -12,6 +12,7 @@ all_from 'lib/Startsiden/UserAgent.pm';
 configure_requires 'Module::Install' => 0;
 
 requires 'CHI';
+requires 'Data::Serializer';
 requires 'Devel::StackTrace';
 requires 'English';
 requires 'File::Basename';
