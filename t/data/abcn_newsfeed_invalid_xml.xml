@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xml:base="http://www.abcnyheter.no"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+ <title>ABC Nyheter - fotball</title>
+ <link>http://www.abcnyheter.no/nyheter/sport/fotball</link>
+ <description></description>
+ <language>no</language>
+<item>
+ <title>Suárez innrømmer feil</title>
+ <link>http://www.abcnyheter.no/nyheter/sport/2013/03/20/suarez-innroemmer-feil</link>
+ <description>Liverpool-spiss Luis Suárez sier han ikke hadde kommet like langt i karrieren uten listigheten og lidenskapen.</description>
+ <comments>http://www.abcnyheter.no/nyheter/sport/2013/03/20/suarez-innroemmer-feil#comments</comments>
+ <category domain="http://www.abcnyheter.no/nyheter/fotball">fotball</category>
+ <category domain="http://www.abcnyheter.no/newsdesk/term/26357">Luis Suárez</category>
+ <category domain="http://www.abcnyheter.no/newsdesk/term/877">Uruguay</category>
+ <category domain="http://www.abcnyheter.no/nyheter/fotball/premier-league/liverpool">Liverpool</category>
+ <category domain="http://www.abcnyheter.no/nyheter/sport/fotball">fotball</category>
+ <category domain="http://www.abcnyheter.no/nyheter/sport">Sport</category>
+ <enclosure url="http://www.abcnyheter.no/files/imagecache/feature/2013-12/suarez680.jpg" length="" type="" />
+ <pubDate>Wed, 20 Mar 2013 08:18:32 +0000</pubDate>
+ <dc:creator>NTB</dc:creator>
+ <guid isPermaLink="false">169811 at http://www.abcnyheter.no</guid>
+</item>
+<item>
+ <description>Ola By Rise sier det gjerne gjør vondt å møte Albania. Brede Hangeland sier fredagens motstander i VM-kvalifiseringen skal få smake sin egen medisin.</description>
+ <comments>http://www.abcnyheter.no/nyheter/sport/2013/03/20/lover-albania-smerte#comments</comments>
+ <category domain="http://www.abcnyheter.no/newsdesk/term/2776">Albania</category>
+ <category domain="http://www.abcnyheter.no/newsdesk/term/3153">Brede Hangeland</category>
+ <category domain="http://www.abcnyheter.no/newsdesk/term/1381">Drillo</category>
+ <category domain="http://www.abcnyheter.no/nyheter/fotball">fotball</category>
+ <category domain="http://www.abcnyheter.no/newsdesk/term/3831">landslag</category>
+ <category domain="http://www.abcnyheter.no/newsdesk/term/35164">landslaget</category>
+ <category domain="http://www.abcnyheter.no/nyheter/sport/fotball">fotball</category>
+ <category domain="http://www.abcnyheter.no/nyheter/sport">Sport</category>
+ <enclosure url="http://www.abcnyheter.no/files/imagecache/feature/2013-12/hange680.jpg" length="" type="" />
+ <pubDate>Wed, 20 Mar 2013 06:07:50 +0000</pubDate>
+ <dc:creator>NTB</dc:creator>
+ <guid isPermaLink="false">169803 at http://www.abcnyheter.no</guid>
+</item>
+</channel>
+</rss>
