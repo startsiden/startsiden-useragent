@@ -256,15 +256,7 @@ sub generate_key {
 
     my $cb = ref $opts[-1] eq 'CODE' ? pop @opts : undef;
 
-    $url = Mojo::URL->new($url);
-    my $flattened_sorted_url = ($url->protocol ? ( $url->protocol . '://' ) : '' ) .
-                               ($url->host     ? ( $url->host_port        ) : '' ) .
-                               ($url->path     ? ( $url->path             ) : '' ) ;
-
-    $flattened_sorted_url .= '?' . join '&', sort { $a cmp $b } List::Util::pairmap { ($b != '') ? (join '=', $a, $b) : $a; } @{ $url->query }
-        if scalar @{ $url->query };
-
-    my $key = join q{,}, $flattened_sorted_url, map {
+    my $key = join q{,}, _normalize_url($url), map {
         my $opt = $_;
         ref $opt eq 'ARRAY' ? "[" . (join q{,}, @{$opt}) . "]" :
         ref $opt eq 'HASH'  ? "{" . (join q{,}, map { ($_, $opt->{$_}) } sort keys %{$opt}) . "}" :
@@ -432,6 +424,21 @@ sub _get_stacktrace {
         }
         $package . $_->line();
     } grep { $_ } @frames;
+}
+
+# Sort query parameters in URL suitable for re-usable cache keys
+sub _normalize_url {
+    my ($url) = @_;
+    $url = Mojo::URL->new($url);
+    
+    my $flattened_sorted_url = ($url->protocol ? ( $url->protocol . '://' ) : '' ) .
+                               ($url->host     ? ( $url->host_port        ) : '' ) .
+                               ($url->path     ? ( $url->path             ) : '' ) ;
+
+    $flattened_sorted_url .= '?' . join '&', sort { $a cmp $b } List::Util::pairmap { ($b ne '') ? (join '=', $a, $b) : $a; } @{ $url->query }
+        if scalar @{ $url->query };
+
+    return $flattened_sorted_url;
 }
 
 1;
