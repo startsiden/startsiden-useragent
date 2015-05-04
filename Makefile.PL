@@ -18,7 +18,7 @@ requires 'English';
 requires 'File::Basename';
 requires 'File::Path';
 requires 'File::Spec';
-requires 'List::Util';
+requires 'List::Util' => '1.29';
 requires 'Mojolicious' => '5.82';
 requires 'POSIX';
 requires 'Readonly';
