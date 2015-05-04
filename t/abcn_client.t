@@ -240,4 +240,20 @@ subtest 'expired+cached functionality' => sub {
 
 # TODO: Replace google.com tests with local server
 
+subtest 'normalize URLs' => sub {
+    my $ua = Startsiden::UserAgent->new();
+
+    my $urls = {
+       '/foo?c=1&a=1' => '/foo?a=1&c=1',
+       'http://foo.com/foo?c=1&a=1' => 'http://foo.com/foo?a=1&c=1',
+       'foo.com/foo?c=1&a=1' => 'foo.com/foo?a=1&c=1',
+       '/foo?c&a=1' => '/foo?a=1&c',
+       'http://foo.com/foo?c&a=1' => 'http://foo.com/foo?a=1&c',
+       'foo.com/foo?c&a=1' => 'foo.com/foo?a=1&c',
+    };
+    while (my ($in, $exp) = each %{$urls}) {
+        is $ua->normalize_url($in), $exp, "$in => $exp";
+    }
+};
+
 done_testing();

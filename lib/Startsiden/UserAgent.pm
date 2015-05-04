@@ -256,7 +256,7 @@ sub generate_key {
 
     my $cb = ref $opts[-1] eq 'CODE' ? pop @opts : undef;
 
-    my $key = join q{,}, _normalize_url($url), map {
+    my $key = join q{,}, $self->normalize_url($url), map {
         my $opt = $_;
         ref $opt eq 'ARRAY' ? "[" . (join q{,}, @{$opt}) . "]" :
         ref $opt eq 'HASH'  ? "{" . (join q{,}, map { ($_, $opt->{$_}) } sort keys %{$opt}) . "}" :
@@ -279,6 +279,19 @@ sub is_considered_error {
     return $tx->error;
 }
 
+sub normalize_url {
+    my ($self, $url) = @_;
+    $url = Mojo::URL->new($url);
+
+    my $flattened_sorted_url = ($url->protocol ? ( $url->protocol . '://' ) : '' ) .
+                               ($url->host     ? ( $url->host_port        ) : '' ) .
+                               ($url->path     ? ( $url->path             ) : '' ) ;
+
+    $flattened_sorted_url .= '?' . join '&', sort { $a cmp $b } List::Util::pairmap { ($b ne '') ? (join '=', $a, $b) : $a; } @{ $url->query }
+        if scalar @{ $url->query };
+
+    return $flattened_sorted_url;
+}
 
 sub _serialize_tx {
     my ($tx) = @_;
@@ -426,21 +439,6 @@ sub _get_stacktrace {
     } grep { $_ } @frames;
 }
 
-# Sort query parameters in URL suitable for re-usable cache keys
-sub _normalize_url {
-    my ($url) = @_;
-    $url = Mojo::URL->new($url);
-    
-    my $flattened_sorted_url = ($url->protocol ? ( $url->protocol . '://' ) : '' ) .
-                               ($url->host     ? ( $url->host_port        ) : '' ) .
-                               ($url->path     ? ( $url->path             ) : '' ) ;
-
-    $flattened_sorted_url .= '?' . join '&', sort { $a cmp $b } List::Util::pairmap { ($b ne '') ? (join '=', $a, $b) : $a; } @{ $url->query }
-        if scalar @{ $url->query };
-
-    return $flattened_sorted_url;
-}
-
 1;
 
 =encoding utf8
@@ -579,6 +577,17 @@ Video can be requested individually by ID.
 Returns a key to be used for the cache agent. It accepts the same parameters
 that a normal ->get() request does.
 
+=head2 validate_key
+
+  my $status = $ua4->validate_key('http://example.com');
+
+Fast validates if key is valid in cache without doing fetch.
+Return 1 if true.
+
+=head2 normalize_url($url)
+
+Returns a string with the URL passed, with sorted query parameters suitable for cache lookup
+
 =head1 OVERRIDEN METHODS
 
 =head2 new
@@ -603,13 +612,6 @@ In addition if a relative file path is given, it tries to return the file append
 the attribute C<local_dir>. In this case a fake L<Mojo::Transaction::HTTP> object is returned,
 populated with a L<Mojo::Message::Request> with method and url, and a L<Mojo::Message::Response>
 with headers, code and body set.
-
-=head2 validate_key
-
-  my $status = $ua4->validate_key('http://example.com');
-
-Fast validates if key is valid in cache without doing fetch.
-Return 1 if true.
 
 =head1 ENVIRONMENT VARIABLES
 
