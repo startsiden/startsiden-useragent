@@ -255,9 +255,19 @@ sub generate_key {
     my ($self, $url, @opts) = @_;
 
     my $cb = ref $opts[-1] eq 'CODE' ? pop @opts : undef;
-    my $key = join q{,}, "$url", map {
-        ref $_ eq 'ARRAY' ? "[" . (join q{,}, @{$_}) . "]" :
-        ref $_ eq 'HASH'  ? "{" . (join q{,}, %{$_}) . "}" :
+
+    $url = Mojo::URL->new($url);
+    my $flattened_sorted_url = ($url->protocol ? ( $url->protocol . '://' ) : '' ) .
+                               ($url->host     ? ( $url->host_port        ) : '' ) .
+                               ($url->path     ? ( $url->path             ) : '' ) ;
+
+    $flattened_sorted_url .= '?' . join '&', sort { $a cmp $b } List::Util::pairmap { ($b != '') ? (join '=', $a, $b) : $a; } @{ $url->query }
+        if scalar @{ $url->query };
+
+    my $key = join q{,}, $flattened_sorted_url, map {
+        my $opt = $_;
+        ref $opt eq 'ARRAY' ? "[" . (join q{,}, @{$opt}) . "]" :
+        ref $opt eq 'HASH'  ? "{" . (join q{,}, map { ($_, $opt->{$_}) } sort keys %{$opt}) . "}" :
         "$_"
     } @opts;
 
