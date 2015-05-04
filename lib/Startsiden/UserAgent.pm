@@ -287,7 +287,7 @@ sub normalize_url {
                                ($url->host     ? ( $url->host_port        ) : '' ) .
                                ($url->path     ? ( $url->path             ) : '' ) ;
 
-    $flattened_sorted_url .= '?' . join '&', sort { $a cmp $b } List::Util::pairmap { ($b ne '') ? (join '=', $a, $b) : $a; } @{ $url->query }
+    $flattened_sorted_url .= '?' . join '&', sort { $a cmp $b } List::Util::pairmap { (($b ne '') ? (join '=', $a, $b) : $a); } @{ $url->query }
         if scalar @{ $url->query };
 
     return $flattened_sorted_url;
