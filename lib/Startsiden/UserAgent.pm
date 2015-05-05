@@ -23,7 +23,7 @@ use Time::HiRes qw/time/;
 Readonly my $HTTP_OK => 200;
 Readonly my $HTTP_FILE_NOT_FOUND => 404;
 
-our $VERSION = '1.0';
+our $VERSION = '1.01';
 
 # TODO: Timeout, fallback
 # TODO: Expected result content (json etc)
@@ -53,6 +53,7 @@ has 'logger' => sub { Mojo::Log->new() };
 has 'access_log' => sub { $ENV{SUA_ACCESS_LOG} || '' };
 has 'use_expired_cached_content' => sub { $ENV{SUA_USE_EXPIRED_CACHED_CONTENT} // 1 };
 has 'accepted_error_codes' => sub { $ENV{SUA_ACCEPTED_ERROR_CODES} || '' };
+has 'sorted_queries' => sub { };
 
 has 'created_stacktrace' => '';
 
@@ -86,6 +87,7 @@ sub new {
         access_log
         use_expired_cached_content
         accepted_error_codes
+        sorted_queries
     /;
 
     $ua->created_stacktrace($ua->_get_stacktrace);
@@ -119,6 +121,8 @@ sub get {
     my ($self, $url, @opts) = @_;
 
     my $cb = ref $opts[-1] eq 'CODE' ? pop @opts : undef;
+
+    $url = $self->sort_query($url) if $self->sorted_queries;
     $url = ($self->always_return_file || $url);
 
     my $key = $self->generate_key($url, @opts);
@@ -256,7 +260,7 @@ sub generate_key {
 
     my $cb = ref $opts[-1] eq 'CODE' ? pop @opts : undef;
 
-    my $key = join q{,}, $self->normalize_url($url), map {
+    my $key = join q{,}, $self->sort_query($url), map {
         my $opt = $_;
         ref $opt eq 'ARRAY' ? "[" . (join q{,}, @{$opt}) . "]" :
         ref $opt eq 'HASH'  ? "{" . (join q{,}, map { ($_, $opt->{$_}) } sort keys %{$opt}) . "}" :
@@ -279,7 +283,7 @@ sub is_considered_error {
     return $tx->error;
 }
 
-sub normalize_url {
+sub sort_query {
     my ($self, $url) = @_;
     $url = Mojo::URL->new($url);
 
@@ -521,6 +525,11 @@ will get back the last successful content. Defaults to C<$ENV{SUA_EXPIRED_CONTEN
 A list of error codes that should not be considered as errors. For instance this means that the client will not look for expired
 cached content for requests that result in this response. Defaults to C<$ENV{SUA_ACCEPTED_ERROR_CODES} || ''>
 
+=head2 sorted_queries
+
+Setting this to a true value will sort query parameters in the resulting URL. This means that requests will be identical if the key/value pairs
+are the same. This helps when URLs have been built up using hashes that may have random orders.
+
 =head1 OVERRIDEN ATTRIBUTES
 
 In addition L<Startsiden::UserAgent> overrides the following L<Mojo::UserAgent> attributes.
@@ -584,7 +593,7 @@ that a normal ->get() request does.
 Fast validates if key is valid in cache without doing fetch.
 Return 1 if true.
 
-=head2 normalize_url($url)
+=head2 sort_query($url)
 
 Returns a string with the URL passed, with sorted query parameters suitable for cache lookup
 
