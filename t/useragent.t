@@ -252,7 +252,7 @@ subtest 'normalize URLs' => sub {
        'foo.com/foo?c&a=1' => 'foo.com/foo?a=1&c',
     };
     while (my ($in, $exp) = each %{$urls}) {
-        is $ua->normalize_url($in), $exp, "$in => $exp";
+        is $ua->sort_query($in), $exp, "$in => $exp";
     }
 };
 
