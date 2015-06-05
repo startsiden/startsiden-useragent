@@ -391,7 +391,7 @@ sub _log_line {
         $callers, $self->created_stacktrace
     )));
 
-    return unless $self->{access_log};
+    return unless $self->access_log;
 
     my $elapsed_time = sprintf '%.3f', (time-$opts->{start_time});
 
