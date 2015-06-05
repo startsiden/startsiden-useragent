@@ -23,7 +23,7 @@ use Time::HiRes qw/time/;
 Readonly my $HTTP_OK => 200;
 Readonly my $HTTP_FILE_NOT_FOUND => 404;
 
-our $VERSION = '1.02';
+our $VERSION = '1.04';
 
 # TODO: Timeout, fallback
 # TODO: Expected result content (json etc)
@@ -391,7 +391,7 @@ sub _log_line {
         $callers, $self->created_stacktrace
     )));
 
-    return unless $self->{access_log};
+    return unless $self->access_log;
 
     my $elapsed_time = sprintf '%.3f', (time-$opts->{start_time});
 
