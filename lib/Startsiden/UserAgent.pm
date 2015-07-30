@@ -3,6 +3,7 @@ package Startsiden::UserAgent;
 use warnings;
 use strict;
 use v5.10;
+use Algorithm::LCSS;
 use CHI;
 use Devel::StackTrace;
 use English qw(-no_match_vars);
@@ -383,12 +384,21 @@ sub _log_line {
     $self->_write_local_file_res($tx, $ENV{SUA_CLIENT_WRITE_LOCAL_FILE_RES_DIR});
 
     my $callers = $self->_get_stacktrace;
+    my $created_stacktrace = $self->created_stacktrace;
+
+    # Remove common parts to get smaller created stacktrace
+    my $strings = Algorithm::LCSS::CSS_Sorted( [ split /,/, $callers ] , [ split /,/, $created_stacktrace ] );
+    map {
+        my @lcss = @{$_};
+        my $pat = join ",", @lcss[1..$#lcss-1];
+        if (scalar @lcss > 2) { $created_stacktrace =~ s{$pat}{,}mx }
+    } @{ $strings || [] };
 
     $self->logger->debug(sprintf(q{Returning %s '%s' => %s for %s (%s)}, (
         $opts->{type},
         String::Truncate::elide( $tx->req->url, 150, { truncate => 'middle'} ),
         ($tx->res->code || $tx->res->error->{code} || $tx->res->error->{message}),
-        $callers, $self->created_stacktrace
+        $callers, $created_stacktrace
     )));
 
     return unless $self->access_log;
