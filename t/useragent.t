@@ -24,7 +24,7 @@ my $app = Mojolicious->new();
 my $controller = sub { shift->render(text => Time::HiRes::time(), status => 200); };
 $app->routes->get('/' => { text => 'works' });
 $app->routes->get('/maybe_not_found' => sub { $controller->(@_); } );
-
+$app->routes->get('/content' => { text => 'content' });
 
 use FindBin qw($Bin);
 
@@ -45,32 +45,39 @@ my $ua4 = Startsiden::UserAgent->new();
 is $ua4->get('NOT_abcn_newsfeed.xml')->res->code, 404, 'Return 404 when file is not found';
 is $ua4->get('NOT_abcn_newsfeed.xml')->res->body, '',  'Return empty body when file not found';
 
-$ua4->invalidate('http://google.com');
+subtest 'Test against real URL on Mock server' => sub {
+    my $ua5 = Startsiden::UserAgent->new();
+    $ua5->server->app($app);
 
-my $tx1 = $ua4->get('http://google.com');
-my $first_age = $tx1->res->headers->header('X-Startsiden-UserAgent-Age');
-ok !$first_age, 'Not cached first time';
+    local *Startsiden::UserAgent::is_cacheable = sub { return 1; };
 
-my $tx2 = $ua4->get('http://google.com');
-my $second_ts = $tx2->res->headers->header('X-Startsiden-UserAgent-Cached');
-my $second_age = $tx2->res->headers->header('X-Startsiden-UserAgent-Age');
-ok $second_age > 0, 'Response is cached';
+    $ua5->invalidate('/content');
 
-my $tx3 = $ua4->get('http://google.com');
-my $third_ts = $tx3->res->headers->header('X-Startsiden-UserAgent-Cached');
-is $second_ts, $third_ts, 'Response is still the same one cached';
+    my $tx1 = $ua5->get('/content');
+    my $first_age = $tx1->res->headers->header('X-Startsiden-UserAgent-Age');
+    ok !$first_age, 'Not cached first time';
 
-# Requests with headers
-my $rand = time;
-my $tx4 = $ua4->get('http://google.com' => { 'X-Some-Header' => $rand });
-my $fourth_age = $tx4->res->headers->header('X-Startsiden-UserAgent-Age');
-ok !$fourth_age, 'Not cached first time';
-ok $tx4->res->content, 'Contains something';
+    my $tx2 = $ua5->get('/content');
+    my $second_ts = $tx2->res->headers->header('X-Startsiden-UserAgent-Cached');
+    my $second_age = $tx2->res->headers->header('X-Startsiden-UserAgent-Age');
+    ok $second_age > 0, 'Response is cached';
 
-my $tx5 = $ua4->get('http://google.com' => { 'X-Some-Header' => $rand });
-my $fifth_ts = $tx5->res->headers->header('X-Startsiden-UserAgent-Age');
-ok $fifth_ts > 0, 'Response is cached';
-ok $tx5->res->content, 'Contains something';
+    my $tx3 = $ua5->get('/content');
+    my $third_ts = $tx3->res->headers->header('X-Startsiden-UserAgent-Cached');
+    is $second_ts, $third_ts, 'Response is still the same one cached';
+
+    # Requests with headers
+    my $rand = time;
+    my $tx4 = $ua5->get('/content' => { 'X-Some-Header' => $rand });
+    my $fourth_age = $tx4->res->headers->header('X-Startsiden-UserAgent-Age');
+    ok !$fourth_age, 'Not cached first time';
+    ok $tx4->res->content, 'Contains something';
+
+    my $tx5 = $ua5->get('/content' => { 'X-Some-Header' => $rand });
+    my $fifth_ts = $tx5->res->headers->header('X-Startsiden-UserAgent-Age');
+    ok $fifth_ts > 0, 'Response is cached';
+    ok $tx5->res->content, 'Contains something';
+};
 
 # Set cache directly to avoid redundant call to Vipr
 my $ua_with_mock_server = Startsiden::UserAgent->new();
@@ -101,8 +108,12 @@ subtest 'ABCN-3702' => sub {
 
 subtest 'ABCN-3572' => sub {
     my $ua = Startsiden::UserAgent->new();
+    $ua->server->app($app);
 
-    my $url = "http://www.google.com/?non-blocking-cache-test";
+    # Allow caching /foo requests too 
+    local *Startsiden::UserAgent::is_cacheable = sub { return 1; };
+
+    my $url = "/content/?non-blocking-cache-test";
     $ua->invalidate($url);
     my $tx = $ua->get($url);
     is $tx->res->code, 200, 'right status';
@@ -136,23 +147,27 @@ subtest 'ABCN-3572' => sub {
 
 subtest 'Cache with request headers' => sub {
     my $ua = Startsiden::UserAgent->new();
+    $ua->server->app($app);
 
     my $keys = {
-        'http://www.google.com' => ['http://www.google.com'],
-        'http://www.google.com,{X-Test,Test}' => ['http://www.google.com', { 'X-Test' => 'Test' } ],
-        'http://www.google.com,{X-Test,Test}' => ['http://www.google.com', { 'X-Test' => 'Test' }, sub { } ],
-        'http://www.google.com,{},form,{a,b}' => ['http://www.google.com', {}, form => { 'a' => 'b' } ],
-        'http://www.google.com,{X-Test,Test},form,{a,b}' => ['http://www.google.com', { 'X-Test' => 'Test' }, form => { 'a' => 'b' }, sub { } ],
-        'http://www.google.com,{X-Test,Test},json,{a,b}' => ['http://www.google.com', { 'X-Test' => 'Test' }, json => { 'a' => 'b' }, sub { } ],
+        'http://www.non-existent-server.com' => ['http://www.non-existent-server.com'],
+        'http://www.non-existent-server.com,{X-Test,Test}' => ['http://www.non-existent-server.com', { 'X-Test' => 'Test' } ],
+        'http://www.non-existent-server.com,{X-Test,Test}' => ['http://www.non-existent-server.com', { 'X-Test' => 'Test' }, sub { } ],
+        'http://www.non-existent-server.com,{},form,{a,b}' => ['http://www.non-existent-server.com', {}, form => { 'a' => 'b' } ],
+        'http://www.non-existent-server.com,{X-Test,Test},form,{a,b}' => ['http://www.non-existent-server.com', { 'X-Test' => 'Test' }, form => { 'a' => 'b' }, sub { } ],
+        'http://www.non-existent-server.com,{X-Test,Test},json,{a,b}' => ['http://www.non-existent-server.com', { 'X-Test' => 'Test' }, json => { 'a' => 'b' }, sub { } ],
     };
     while (my ($k, $v) = each %{$keys}) {
         is $ua->generate_key(@{$v}), $k, "generate_key " . (join " ", @{$v}) . " => $k";
     }
 
-    my @params = ('http://www.google.com' => { 'X-Test' => 'Test' });
+	# Allow caching /foo requests too
+	local *Startsiden::UserAgent::is_cacheable = sub { return 1; };
+
+    my @params = ('/content' => { 'X-Test' => 'Test' });
 
     my $cache_key = $ua->generate_key(@params);
-    is($cache_key, 'http://www.google.com,{X-Test,Test}', 'cache key is correct');
+    is($cache_key, '/content,{X-Test,Test}', 'cache key is correct');
     $ua->invalidate($cache_key);
 
     my $tx1 = $ua->get(@params);
@@ -177,8 +192,12 @@ subtest 'Should run callbacks even if content is local' => sub {
 
 subtest 'Should run callbacks even if content is cached' => sub {
     my $ua = Startsiden::UserAgent->new();
+    $ua->server->app($app);
 
-    my $url = 'http://www.google.com';
+	# Allow caching /foo requests too
+	local *Startsiden::UserAgent::is_cacheable = sub { return 1; };
+
+    my $url = '/content';
     my $tx = $ua->get($url);
 
     $tx = $ua->get($url => sub {
@@ -242,8 +261,6 @@ subtest 'expired+cached functionality' => sub {
 	is $tx->res->code, '404', 'Get 404 correctly - fresh';
 	isnt $new_body, $tx->res->body, 'Result is fresh';
 };
-
-# TODO: Replace google.com tests with local server
 
 subtest 'normalize URLs' => sub {
     my $ua = Startsiden::UserAgent->new();
