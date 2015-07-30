@@ -505,12 +505,12 @@ to the value of the C<SUA_ALWAYS_RETURN_FILE> environment value and if not, it r
 
   my $cache_agent = $ua->cache_agent;
   $ua->cache_agent(CHI->new(
-     driver             => 'File',
-     root_dir           => '/tmp/startsiden-useragent-cache',
-     serializer         => 'Storable',
-     namespace          => 'SUA_Client',
-     expires_in         => '1 minutes',
-     expires_on_backend => 1,
+        driver             => $ENV{SUA_CACHE_DRIVER}             || 'File',
+        root_dir           => $ENV{SUA_CACHE_ROOT_DIR}           || '/tmp/startsiden-useragent-cache',
+        serializer         => $ENV{SUA_CACHE_SERIALIZER}         || 'Storable',
+        namespace          => $ENV{SUA_CACHE_NAMESPACE}          || 'SUA_Client',
+        expires_in         => $ENV{SUA_CACHE_EXPIRES_IN}         // '1 minute',
+        expires_on_backend => $ENV{SUA_CACHE_EXPIRES_ON_BACKEND} // 1,
   ));
 
 Tells L<Startsiden::UserAgent> which cache_agent to use. It needs to be CHI-compliant and defaults to the above settings.
