@@ -301,18 +301,15 @@ sub sort_query {
 sub _serialize_tx {
     my ($tx) = @_;
 
-    my $cached_ts = time;
+    $tx->res->headers->header('X-Startsiden-UserAgent-Cached', time);
+
     return {
-        cached  => $cached_ts,
         method  => $tx->req->method,
         url     => $tx->req->url,
         code    => $tx->res->code,
         body    => $tx->res->body,
         json    => $tx->res->json,
-        headers => {
-          %{ $tx->res->headers->to_hash || {} },
-          'X-Startsiden-UserAgent-Cached' => $cached_ts
-        }
+        headers => $tx->res->headers->to_hash,
     };
 }
 
@@ -326,6 +323,10 @@ sub _build_fake_tx {
     $tx->req->url(Mojo::URL->new($opts->{url}));
 
     $tx->res->headers->from_hash($opts->{headers});
+
+    my $now = time;
+    $tx->res->headers->header('X-Startsiden-UserAgent-Age', $now - ($tx->res->headers->header('X-Startsiden-UserAgent-Cached') || $now));
+
     $tx->res->code($opts->{code});
     $tx->res->{json} = $opts->{json};
     $tx->res->body($opts->{body});

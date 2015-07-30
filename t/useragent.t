@@ -48,12 +48,13 @@ is $ua4->get('NOT_abcn_newsfeed.xml')->res->body, '',  'Return empty body when f
 $ua4->invalidate('http://google.com');
 
 my $tx1 = $ua4->get('http://google.com');
-my $first_ts = $tx1->res->headers->header('X-Startsiden-UserAgent-Cached');
-ok !$first_ts, 'Not cached first time';
+my $first_age = $tx1->res->headers->header('X-Startsiden-UserAgent-Age');
+ok !$first_age, 'Not cached first time';
 
 my $tx2 = $ua4->get('http://google.com');
 my $second_ts = $tx2->res->headers->header('X-Startsiden-UserAgent-Cached');
-ok $second_ts, 'Response is cached';
+my $second_age = $tx2->res->headers->header('X-Startsiden-UserAgent-Age');
+ok $second_age > 0, 'Response is cached';
 
 my $tx3 = $ua4->get('http://google.com');
 my $third_ts = $tx3->res->headers->header('X-Startsiden-UserAgent-Cached');
@@ -62,13 +63,13 @@ is $second_ts, $third_ts, 'Response is still the same one cached';
 # Requests with headers
 my $rand = time;
 my $tx4 = $ua4->get('http://google.com' => { 'X-Some-Header' => $rand });
-my $fourth_ts = $tx4->res->headers->header('X-Startsiden-UserAgent-Cached');
-ok !$fourth_ts, 'Not cached first time';
+my $fourth_age = $tx4->res->headers->header('X-Startsiden-UserAgent-Age');
+ok !$fourth_age, 'Not cached first time';
 ok $tx4->res->content, 'Contains something';
 
 my $tx5 = $ua4->get('http://google.com' => { 'X-Some-Header' => $rand });
-my $fifth_ts = $tx5->res->headers->header('X-Startsiden-UserAgent-Cached');
-ok $fifth_ts, 'Response is cached';
+my $fifth_ts = $tx5->res->headers->header('X-Startsiden-UserAgent-Age');
+ok $fifth_ts > 0, 'Response is cached';
 ok $tx5->res->content, 'Contains something';
 
 # Set cache directly to avoid redundant call to Vipr
@@ -105,7 +106,7 @@ subtest 'ABCN-3572' => sub {
     $ua->invalidate($url);
     my $tx = $ua->get($url);
     is $tx->res->code, 200, 'right status';
-    ok !$tx->res->headers->header('X-Startsiden-UserAgent-Cached'), 'First request should not be cached';
+    ok !$tx->res->headers->header('X-Startsiden-UserAgent-Age'), 'First request should not be cached';
 
     my $first_code = $tx->res->code;
     my $first_body = $tx->res->body;
@@ -124,11 +125,12 @@ subtest 'ABCN-3572' => sub {
     );
     ok $success, 'successful';
     ok $headers->header('X-Startsiden-UserAgent-Cached'), 'Non-blocking request should be cached';
+    ok $headers->header('X-Startsiden-UserAgent-Age') > 0, 'Non-blocking request should be cached';
 
     is $code,    $first_code, 'cached status is the same as original';
     is $body,    $first_body, 'cached body is the same as original';
 
-    $headers->remove('X-Startsiden-UserAgent-Cached');
+    $headers->remove('X-Startsiden-UserAgent-Age');
     is_deeply $headers->to_hash, $first_headers->to_hash, 'cached headers are the same as original';
 };
 
@@ -154,10 +156,10 @@ subtest 'Cache with request headers' => sub {
     $ua->invalidate($cache_key);
 
     my $tx1 = $ua->get(@params);
-    ok !$tx1->res->headers->header('X-Startsiden-UserAgent-Cached'), 'first response is not cached';
+    ok !$tx1->res->headers->header('X-Startsiden-UserAgent-Age'), 'first response is not cached';
 
     my $tx2 = $ua->get(@params);
-    ok $tx2->res->headers->header('X-Startsiden-UserAgent-Cached'), 'response is cached';
+    ok $tx2->res->headers->header('X-Startsiden-UserAgent-Age') > 0, 'response is cached';
 
 };
 
