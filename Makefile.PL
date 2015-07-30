@@ -11,7 +11,7 @@ all_from 'lib/Startsiden/UserAgent.pm';
 
 configure_requires 'Module::Install' => 0;
 
-requiers 'Algorithm::LCSS';
+requires 'Algorithm::LCSS';
 requires 'CHI';
 requires 'Data::Serializer';
 requires 'Devel::StackTrace';
