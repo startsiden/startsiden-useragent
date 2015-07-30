@@ -50,6 +50,7 @@ has 'cache_agent'        => sub { $ENV{SUA_NOCACHE} ? () : CHI->new(
         expires_on_backend => $ENV{SUA_CACHE_EXPIRES_ON_BACKEND} // 1,
 )};
 
+has 'cache_url_opts' => sub { {} };
 has 'logger' => sub { Mojo::Log->new() };
 has 'access_log' => sub { $ENV{SUA_ACCESS_LOG} || '' };
 has 'use_expired_cached_content' => sub { $ENV{SUA_USE_EXPIRED_CACHED_CONTENT} // 1 };
@@ -85,6 +86,8 @@ sub new {
         local_dir
         always_return_file
         cache_agent
+        cache_url_opts
+        logger
         access_log
         use_expired_cached_content
         accepted_error_codes
@@ -137,7 +140,7 @@ sub get {
     } : ();
     # Is an absolute URL or an URL relative to the app eg. http://foo.com/ or /foo.txt
     if (Mojo::URL->new($url)->is_abs || $url =~ m{ \A / }gmx) {
-        if ($self->is_cacheable($key)) { # TODO: URL by URL, and case-by-case expiration
+        if ($self->is_cacheable($key)) {
             my $serialized = $self->cache_agent->get($key);
             if ($serialized) {
                 my $cached_tx = _build_fake_tx($serialized);
@@ -209,7 +212,7 @@ sub _post_process_get {
             }
         } else {
             # Store object in cache
-            $self->cache_agent->set($key, _serialize_tx($tx));
+            $self->cache_agent->set($key, _serialize_tx($tx), $self->_cache_url_opts($tx->req->url));
         }
     }
 
@@ -220,6 +223,12 @@ sub _post_process_get {
     });
 
     return $tx;
+}
+
+sub _cache_url_opts {
+    my ($self, $url) = @_;
+    my ($pat, $opts) = List::Util::pairfirst { $url =~ /$a/; } %{ $self->cache_url_opts || {} };
+    return $opts || ();
 }
 
 sub set {
@@ -517,9 +526,20 @@ Tells L<Startsiden::UserAgent> which cache_agent to use. It needs to be CHI-comp
 
 You may also set the C<SUA_NOCACHE> environment variable to avoid caching at all.
 
+=head2 cache_url_opts
+
+   my $urls_href = $ua->cache_url_opts;
+   $ua->cache_url_opts({ 
+       'https?://foo.com/long-lasting-data.*' => { expires_in => '2 weeks' }, # Cache some data two weeks
+       '.*' => { expires_at => 0 }, # Don't store anything in cache
+   });
+   
+Accepts a hash ref of regexp strings and expire times, this allows you to define cache validity time for individual URLs, hosts etc.
+The first match will be used.
+
 =head2 logger
 
-Provide a logging object, defaults to ABCN::Logger
+Provide a logging object, defaults to Mojo::Log
 
 =head2 access_log
 

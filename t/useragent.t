@@ -278,4 +278,24 @@ subtest 'normalize URLs' => sub {
     }
 };
 
+subtest 'url by url caching' => sub {
+   local $ENV{SUA_CACHE_EXPIRES_IN} = '1 seconds';
+   my $ua = Startsiden::UserAgent->new( cache_url_opts => { 'http://.*?/content' => { expires_in => '5 seconds' } } );
+   $ua->server->app($app);
+
+   # Allow caching /foo requests too
+   local *Startsiden::UserAgent::is_cacheable = sub { return 1; };
+
+   $ua->invalidate($ua->generate_key('/content'));
+   my $tx = $ua->get('/content');
+   my $first_cached_at = $tx->res->headers->header('X-Startsiden-UserAgent-Cached');
+
+   sleep 1;
+
+   my $tx2 = $ua->get('/content');
+
+   is $tx2->res->headers->header('X-Startsiden-UserAgent-Cached'), $first_cached_at, 'Same cached at time';
+   ok $tx2->res->headers->header('X-Startsiden-UserAgent-Age') > 0, 'Has been in cached more than the default 1 seconds';
+};
+
 done_testing();
