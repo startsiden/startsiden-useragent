@@ -40,16 +40,16 @@ has 'request_timeout'    => sub { $ENV{MOJO_REQUEST_TIMEOUT}    // 10 };
 # SUA_CLIENT_CONFIG
 has 'local_dir'          => sub { $ENV{SUA_LOCAL_DIR}          // q{}   };
 has 'always_return_file' => sub { $ENV{SUA_ALWAYS_RETURN_FILE} // undef };
-has 'cache_agent'        => sub { $ENV{SUA_NOCACHE}            ? () : # Allow override cache
-    CHI->new(
-        driver             => 'File',
-        root_dir           => '/tmp/startsiden-useragent-cache',
-        serializer         => 'Storable',
-        namespace          => 'SUA_Client',
-        expires_in         => '1 minute',
-        expires_on_backend => 1,
-    );
-};
+
+has 'cache_agent'        => sub { $ENV{SUA_NOCACHE} ? () : CHI->new(
+        driver             => $ENV{SUA_CACHE_DRIVER}             || 'File',
+        root_dir           => $ENV{SUA_CACHE_ROOT_DIR}           || '/tmp/startsiden-useragent-cache',
+        serializer         => $ENV{SUA_CACHE_SERIALIZER}         || 'Storable',
+        namespace          => $ENV{SUA_CACHE_NAMESPACE}          || 'SUA_Client',
+        expires_in         => $ENV{SUA_CACHE_EXPIRES_IN}         // '1 minute',
+        expires_on_backend => $ENV{SUA_CACHE_EXPIRES_ON_BACKEND} // 1,
+)};
+
 has 'logger' => sub { Mojo::Log->new() };
 has 'access_log' => sub { $ENV{SUA_ACCESS_LOG} || '' };
 has 'use_expired_cached_content' => sub { $ENV{SUA_USE_EXPIRED_CACHED_CONTENT} // 1 };

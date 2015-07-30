@@ -5,6 +5,7 @@ BEGIN {
   $ENV{MOJO_REACTOR} = 'Mojo::Reactor::Poll';
 }
 
+use File::Temp;
 use Test::More;
 use Time::HiRes;
 use IO::Compress::Gzip 'gzip';
@@ -15,6 +16,8 @@ use Mojo::UserAgent::Server;
 use Mojolicious;
 
 # Startsiden::UserAgent specific tests
+
+$ENV{SUA_CACHE_ROOT_DIR} = File::Temp::tempdir( CLEANUP => 1 );
 
 # Setup mock server
 my $app = Mojolicious->new();
