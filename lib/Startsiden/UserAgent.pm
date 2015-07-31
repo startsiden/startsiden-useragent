@@ -541,6 +541,20 @@ The first match will be used.
 
 Provide a logging object, defaults to Mojo::Log
 
+Example:
+    Returning fetched 'https://graph.facebook.com?ids=http%3A%2F%2Fwww.abcnyheter.no%2Flivet%2F20...-lommebok&access_token=705804969518861%7C0dd46c0e1a014e42dccb99b8c8f8ad94' => 200 for A.C.Facebook:133,185,183,A.M.F.ArticleList:19,9,A.M.Selector:47,A.Gonzo:167,responsive/modules/most-shared.html.tt:15,15,13,templates/inc/macros.tt:125,138,templates/responsive/frontpage.html.tt:10,10,16,Template:66,A.G.C.Article:338,147,A.Gonzo:417,main:14 (A.C.Facebook:68,E.C.Sandbox_874:7,A.C.Facebook:133,,,main:14)
+
+Format:
+    Returning <cache-status> '<URL>' => 'HTTP code' for <request_stacktrace> (<created_stacktrace>)
+
+    cache-status: (cached|fetched|cached+expired)
+    URL: the URL requested, shortened when it is really long
+    request_stacktrace: Simplified stacktrace with leading module names shortened, also includes TT stacktrace support. Line numbers in the same module are grouped (order kept of course).
+    created_stacktrace: Stack trace for creation of UA object, useful to see what options went in, and which object is used. Same format as normal stacktrace, but skips common parts.
+                        Example:
+                           created_stacktrace: A.C.Facebook:68,E.C.Sandbox_874:7,A.C.Facebook:133,<common part replaced>,main:14
+                           stacktrace: A.C.Facebook:133,< common part: 185,183,A.M.F.ArticleList:19,9,A.M.Selector:47,A.Gonzo:167,responsive/modules/most-shared.html.tt:15,15,13,templates/inc/macros.tt:125,138,templates/responsive/frontpage.html.tt:10,10,16,Template:66,A.G.C.Article:338,147,A.Gonzo:417 >,main:14
+
 =head2 access_log
 
 A file that will get logs of every request, the format is a hybrid of Apache combined log, including time spent for the request.
