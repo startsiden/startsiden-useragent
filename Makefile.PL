@@ -11,6 +11,7 @@ all_from 'lib/Startsiden/UserAgent.pm';
 
 configure_requires 'Module::Install' => 0;
 
+requires 'Algorithm::LCSS';
 requires 'CHI';
 requires 'Data::Serializer';
 requires 'Devel::StackTrace';
@@ -18,7 +19,7 @@ requires 'English';
 requires 'File::Basename';
 requires 'File::Path';
 requires 'File::Spec';
-requires 'List::Util' => '1.29';
+requires 'List::Util' => '1.30';
 requires 'Mojolicious' => '5.82';
 requires 'POSIX';
 requires 'Readonly';
