@@ -10,7 +10,7 @@ use English qw(-no_match_vars);
 use File::Basename;
 use File::Path;
 use File::Spec;
-use List::Util;
+use List::Util 1.42;
 use Mojo::Transaction::HTTP;
 use Mojo::URL;
 use Mojo::Log;
@@ -24,7 +24,7 @@ use Time::HiRes qw/time/;
 Readonly my $HTTP_OK => 200;
 Readonly my $HTTP_FILE_NOT_FOUND => 404;
 
-our $VERSION = '1.05';
+our $VERSION = '1.06';
 
 # TODO: Timeout, fallback
 # TODO: Expected result content (json etc)
@@ -227,7 +227,12 @@ sub _post_process_get {
 
 sub _cache_url_opts {
     my ($self, $url) = @_;
-    my ($pat, $opts) = List::Util::pairfirst { $url =~ /$a/; } %{ $self->cache_url_opts || {} };
+    my ($pat, $opts) =
+        List::Util::pairfirst { $url =~ /$a/ }
+        List::Util::unpairs
+        sort { length $b->key <=> length $a->key }
+        List::Util::pairs %{ $self->cache_url_opts || {} };
+
     return $opts || ();
 }
 
@@ -529,11 +534,11 @@ You may also set the C<SUA_NOCACHE> environment variable to avoid caching at all
 =head2 cache_url_opts
 
    my $urls_href = $ua->cache_url_opts;
-   $ua->cache_url_opts({ 
+   $ua->cache_url_opts({
        'https?://foo.com/long-lasting-data.*' => { expires_in => '2 weeks' }, # Cache some data two weeks
        '.*' => { expires_at => 0 }, # Don't store anything in cache
    });
-   
+
 Accepts a hash ref of regexp strings and expire times, this allows you to define cache validity time for individual URLs, hosts etc.
 The first match will be used.
 

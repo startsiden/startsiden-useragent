@@ -110,7 +110,7 @@ subtest 'ABCN-3572' => sub {
     my $ua = Startsiden::UserAgent->new();
     $ua->server->app($app);
 
-    # Allow caching /foo requests too 
+    # Allow caching /foo requests too
     local *Startsiden::UserAgent::is_cacheable = sub { return 1; };
 
     my $url = "/content/?non-blocking-cache-test";
@@ -296,6 +296,38 @@ subtest 'url by url caching' => sub {
 
    is $tx2->res->headers->header('X-Startsiden-UserAgent-Cached'), $first_cached_at, 'Same cached at time';
    ok $tx2->res->headers->header('X-Startsiden-UserAgent-Age') > 0, 'Has been in cached more than the default 1 seconds';
+};
+
+
+subtest 'url by url caching similar urls' => sub {
+    # We want to be able to specify similar patterns, that will result in
+    # different caching, and it should be predictable which pattern sets the
+    # cache expires time.
+
+   local $ENV{SUA_CACHE_EXPIRES_IN} = '1 seconds';
+   my $ua = Startsiden::UserAgent->new(
+       cache_url_opts => {
+           'http://.*?/content' => { expires_in => '50 seconds' },
+           'http://.*?/content\?test-cache=' => { expires_in => '2 seconds' },
+           'http://.*?/content\?test-ape=' => { expires_in => '5 seconds' },
+       }
+   );
+
+   # XXX: This tests an internal method, which might not be great, but oh well
+   # :/
+
+   my %tests = (
+       '' => '50',
+       '?test-cache=121' => '2',
+       '?test-ape=1'     => '5',
+   );
+   foreach my $path (sort keys %tests) {
+       my $sec = $tests{$path};
+       my $opts = $ua->_cache_url_opts('http://localhost/content' . $path);
+       is($opts->{expires_in}, $sec . ' seconds', "got $sec correct seconds cache url opts for $path");
+   }
+
+
 };
 
 done_testing();
