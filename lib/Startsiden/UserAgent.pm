@@ -18,7 +18,6 @@ use Mojo::Base 'Mojo::UserAgent';
 use Mojo::Util;
 use POSIX;
 use Readonly;
-use String::Truncate;
 use Time::HiRes qw/time/;
 
 Readonly my $HTTP_OK => 200;
@@ -410,8 +409,7 @@ sub _log_line {
     } @{ $strings || [] };
 
     $self->logger->debug(sprintf(q{Returning %s '%s' => %s for %s (%s)}, (
-        $opts->{type},
-        String::Truncate::elide( $tx->req->url, 150, { truncate => 'middle'} ),
+        $opts->{type}, $tx->req->url,
         ($tx->res->code || $tx->res->error->{code} || $tx->res->error->{message}),
         $callers, $created_stacktrace
     )));

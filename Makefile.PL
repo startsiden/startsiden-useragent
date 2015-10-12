@@ -23,7 +23,6 @@ requires 'List::Util' => '1.42';
 requires 'Mojolicious' => '5.82';
 requires 'POSIX';
 requires 'Readonly';
-requires 'String::Truncate';
 requires 'Time::HiRes';
 
 test_requires 'Test::More';
