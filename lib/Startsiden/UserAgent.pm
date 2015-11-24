@@ -1,8 +1,8 @@
 package Startsiden::UserAgent;
-
 use warnings;
 use strict;
 use v5.10;
+
 use Algorithm::LCSS;
 use CHI;
 use Devel::StackTrace;
@@ -11,10 +11,10 @@ use File::Basename;
 use File::Path;
 use File::Spec;
 use List::Util 1.42;
+use Mojo::Base 'Mojo::UserAgent';
+use Mojo::Log;
 use Mojo::Transaction::HTTP;
 use Mojo::URL;
-use Mojo::Log;
-use Mojo::Base 'Mojo::UserAgent';
 use Mojo::Util;
 use POSIX;
 use Readonly;
@@ -48,14 +48,15 @@ has 'cache_agent'        => sub { $ENV{SUA_NOCACHE} ? () : CHI->new(
         namespace          => $ENV{SUA_CACHE_NAMESPACE}          || 'SUA_Client',
         expires_in         => $ENV{SUA_CACHE_EXPIRES_IN}         // '1 minute',
         expires_on_backend => $ENV{SUA_CACHE_EXPIRES_ON_BACKEND} // 1,
+        max_size           => $ENV{SUA_CACHE_MAX_SIZE}           || (1_024 * 1_024 * 1_024) * 2, # 2 gigabytes
 )};
 
-has 'cache_url_opts' => sub { {} };
-has 'logger' => sub { Mojo::Log->new() };
-has 'access_log' => sub { $ENV{SUA_ACCESS_LOG} || '' };
+has 'cache_url_opts'             => sub { {} };
+has 'logger'                     => sub { Mojo::Log->new() };
+has 'access_log'                 => sub { $ENV{SUA_ACCESS_LOG} || '' };
 has 'use_expired_cached_content' => sub { $ENV{SUA_USE_EXPIRED_CACHED_CONTENT} // 1 };
-has 'accepted_error_codes' => sub { $ENV{SUA_ACCEPTED_ERROR_CODES} || '' };
-has 'sorted_queries' => sub { };
+has 'accepted_error_codes'       => sub { $ENV{SUA_ACCEPTED_ERROR_CODES} || '' };
+has 'sorted_queries'             => sub { };
 
 has 'created_stacktrace' => '';
 
