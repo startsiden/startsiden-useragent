@@ -26,9 +26,16 @@
    "prereqs" : {
       "build" : {
          "requires" : {
+            "Class::Unload" : "0",
+            "ExtUtils::Config" : "0",
+            "ExtUtils::Helpers" : "0",
+            "ExtUtils::InstallPaths" : "0",
             "ExtUtils::MakeMaker" : "6.59",
             "IO::Compress::Gzip" : "0",
             "Module::Install" : "0",
+            "Module::Install::Debian" : "0",
+            "Test::Compile" : "0",
+            "Test::MockTime" : "0",
             "Test::More" : "0",
             "Time::HiRes" : "0"
          }
