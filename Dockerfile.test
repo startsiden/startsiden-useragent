@@ -1,0 +1,3 @@
+FROM startsiden-useragent:latest
+
+CMD ciprove
