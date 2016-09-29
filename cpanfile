@@ -15,10 +15,6 @@ requires 'Time::HiRes';
 
 on build => sub {
     requires 'Class::Unload';
-    requires 'ExtUtils::Config';
-    requires 'ExtUtils::Helpers';
-    requires 'ExtUtils::InstallPaths';
-    requires 'ExtUtils::MakeMaker', '6.59';
     requires 'IO::Compress::Gzip';
     requires 'Module::Install::Debian';
     requires 'Module::Install';

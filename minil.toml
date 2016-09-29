@@ -1,4 +1,0 @@
-name = "startsiden-useragent"
-# badges = ["travis"]
-module_maker="ModuleBuildTiny"
-
