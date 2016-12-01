@@ -285,7 +285,7 @@ sub generate_key {
         "$_"
     } @opts;
 
-    if ( $ENV{SUA_CACHE_USE_HASHING} ) {
+    if ( $ENV{SUA_CACHE_USE_HASHING} || length($key) > 240 ) {
         $key = Digest::SHA::sha224_hex( $key );
     }
 
