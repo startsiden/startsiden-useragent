@@ -53,6 +53,7 @@
             "CHI" : "0",
             "Data::Serializer" : "0",
             "Devel::StackTrace" : "0",
+            "Digest::SHA" : "0",
             "English" : "0",
             "File::Basename" : "0",
             "File::Path" : "0",
@@ -78,7 +79,7 @@
          "web" : "https://github.com/startsiden/startsiden-useragent"
       }
    },
-   "version" : "1.12",
+   "version" : "1.13",
    "x_contributors" : [
       "Andreas Marienborg <omega@palle.net>",
       "Arun Isarathiwat <arun@abctech-thailand.com>",
@@ -89,4 +90,3 @@
    ],
    "x_serialization_backend" : "Cpanel::JSON::XS version 3.0217"
 }
-

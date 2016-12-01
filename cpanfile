@@ -2,6 +2,7 @@ requires 'Algorithm::LCSS';
 requires 'CHI';
 requires 'Data::Serializer';
 requires 'Devel::StackTrace';
+requires 'Digest::SHA';
 requires 'English';
 requires 'File::Basename';
 requires 'File::Path';

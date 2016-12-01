@@ -6,6 +6,7 @@ use v5.10;
 use Algorithm::LCSS;
 use CHI;
 use Devel::StackTrace;
+use Digest::SHA qw( sha224_hex );
 use English qw(-no_match_vars);
 use File::Basename;
 use File::Path;
@@ -23,7 +24,7 @@ use Time::HiRes qw/time/;
 Readonly my $HTTP_OK => 200;
 Readonly my $HTTP_FILE_NOT_FOUND => 404;
 
-our $VERSION = '1.12';
+our $VERSION = '1.14';
 
 # TODO: Timeout, fallback
 # TODO: Expected result content (json etc)
@@ -239,19 +240,21 @@ sub _cache_url_opts {
 sub set {
     my ($self, $url, $value) = @_;
 
-    # key is Mojo::URL
-    my $key = $self->generate_key($url);
+    my $key = $self->generate_key( $url );
+
     $self->logger->debug("Illegal cache key: $key") && return if ref $key;
 
     my $fake_tx = _build_fake_tx({
-        url    => $key,
+        url    => $url,
         body   => $value,
         code   => $HTTP_OK,
         method => 'FILE'
     });
 
     $self->logger->debug("Set cache key: $key");
+
     $self->cache_agent->set($key, _serialize_tx($fake_tx));
+
     return $key;
 }
 
@@ -281,6 +284,10 @@ sub generate_key {
         ref $opt eq 'HASH'  ? "{" . (join q{,}, map { ($_, $opt->{$_}) } sort keys %{$opt}) . "}" :
         "$_"
     } @opts;
+
+    if ( $ENV{SUA_CACHE_USE_HASHING} ) {
+        $key = Digest::SHA::sha224_hex( $key );
+    }
 
     return $key;
 }
