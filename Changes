@@ -2,7 +2,7 @@ Revision history for Startsiden-UserAgent
 
 {{$NEXT}}
 
-1.15  2016-12-02 09:48:55 CEST
+1.16  2016-12-02 13:08:55 CEST
     - Cache policy changed to prevent cache keys longer then 180 characters.
     - Tests on docker
 
