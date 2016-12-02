@@ -24,7 +24,7 @@ use Time::HiRes qw/time/;
 Readonly my $HTTP_OK => 200;
 Readonly my $HTTP_FILE_NOT_FOUND => 404;
 
-our $VERSION = '1.14';
+our $VERSION = '1.15';
 
 # TODO: Timeout, fallback
 # TODO: Expected result content (json etc)
@@ -285,7 +285,7 @@ sub generate_key {
         "$_"
     } @opts;
 
-    if ( $ENV{SUA_CACHE_USE_HASHING} ) {
+    if ( $ENV{SUA_CACHE_USE_HASHING} || length($key) > 240 ) {
         $key = Digest::SHA::sha224_hex( $key );
     }
 
