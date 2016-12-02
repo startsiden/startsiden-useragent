@@ -1,0 +1,14 @@
+version: '2'
+services:
+    server:
+        build: .
+        image: startsiden-useragent
+        container_name: startsiden-useragent
+        volumes:
+            - .:/root
+    test:
+        image: startsiden-useragent
+        volumes:
+            - .:/root
+        container_name: startsiden-useragent-test
+        command: prove -l -j 8 t

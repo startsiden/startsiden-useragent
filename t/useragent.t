@@ -326,8 +326,14 @@ subtest 'url by url caching similar urls' => sub {
        my $opts = $ua->_cache_url_opts('http://localhost/content' . $path);
        is($opts->{expires_in}, $sec . ' seconds', "got $sec correct seconds cache url opts for $path");
    }
+};
 
+subtest "long keys should be hashed" => sub {
+    my $url = "https://graph.facebook.com?access_token=1729714790611629|9c6ac27dc09ed357fd789f2af513c5b4&ids=http://www.abcnyheter.no/nyheter/norge/2015/12/09/195186368/monika-saken-facebook-melding-sendt-fra-siktede";
+    my $ua = Startsiden::UserAgent->new();
 
+        my $key = $ua->generate_key($url);
+        is($key, 'dfbe8d37f33c2ffdaf1cf220b99f4bdfae701b4c89be22c25a57bef9', $url);
 };
 
 done_testing();

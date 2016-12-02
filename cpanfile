@@ -13,6 +13,7 @@ requires 'POSIX';
 requires 'Readonly';
 requires 'String::Truncate';
 requires 'Time::HiRes';
+requires 'Socket', '1.97';
 
 on build => sub {
     requires 'Class::Unload';

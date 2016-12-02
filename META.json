@@ -62,6 +62,7 @@
             "Mojolicious" : "7.07",
             "POSIX" : "0",
             "Readonly" : "0",
+            "Socket" : "1.97",
             "String::Truncate" : "0",
             "Time::HiRes" : "0"
          }
@@ -79,7 +80,7 @@
          "web" : "https://github.com/startsiden/startsiden-useragent"
       }
    },
-   "version" : "1.14",
+   "version" : "1.16",
    "x_contributors" : [
       "Andreas Marienborg <omega@palle.net>",
       "Arun Isarathiwat <arun@abctech-thailand.com>",
