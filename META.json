@@ -62,6 +62,7 @@
             "Mojolicious" : "7.07",
             "POSIX" : "0",
             "Readonly" : "0",
+            "Socket" : "1.97",
             "String::Truncate" : "0",
             "Time::HiRes" : "0"
          }
