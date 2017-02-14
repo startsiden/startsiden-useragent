@@ -30,9 +30,8 @@
             "IO::Compress::Gzip" : "0",
             "Module::Install" : "0",
             "Module::Install::Debian" : "0",
-            "TAP::Harness" : "0",
             "Test::Compile" : "0",
-            "Test::Harness" : "0",
+            "Test::Harness" : "3.36",
             "Test::MockTime" : "0",
             "Test::More" : "0",
             "Time::HiRes" : "0"
