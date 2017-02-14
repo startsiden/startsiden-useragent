@@ -30,6 +30,7 @@
             "IO::Compress::Gzip" : "0",
             "Module::Install" : "0",
             "Module::Install::Debian" : "0",
+            "TAP::Harness" : "0",
             "Test::Compile" : "0",
             "Test::Harness" : "0",
             "Test::MockTime" : "0",
@@ -81,7 +82,7 @@
          "web" : "https://github.com/startsiden/startsiden-useragent"
       }
    },
-   "version" : "1.21",
+   "version" : "1.23",
    "x_contributors" : [
       "Andreas Marienborg <omega@palle.net>",
       "Arun Isarathiwat <arun@abctech-thailand.com>",

@@ -20,6 +20,7 @@ on build => sub {
     requires 'IO::Compress::Gzip';
     requires 'Module::Install::Debian';
     requires 'Module::Install';
+    requires 'TAP::Harness';
     requires 'Test::Compile';
     requires 'Test::Harness';
     requires 'Test::MockTime';
