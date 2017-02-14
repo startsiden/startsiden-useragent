@@ -1,10 +1,10 @@
 {
    "abstract" : "Caching, Non-blocking I/O HTTP, Local file and WebSocket user agent",
    "author" : [
-      "unknown"
+      "ABC Startsiden AS"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Milla version v1.0.16, Dist::Zilla version 6.006, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Dist::Milla version v1.0.17, Dist::Zilla version 6.008, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "restricted"
    ],
@@ -31,6 +31,7 @@
             "Module::Install" : "0",
             "Module::Install::Debian" : "0",
             "Test::Compile" : "0",
+            "Test::Harness" : "0",
             "Test::MockTime" : "0",
             "Test::More" : "0",
             "Time::HiRes" : "0"
@@ -43,7 +44,7 @@
       },
       "develop" : {
          "requires" : {
-            "Dist::Milla" : "v1.0.16",
+            "Dist::Milla" : "v1.0.17",
             "Test::Pod" : "1.41"
          }
       },
@@ -80,14 +81,17 @@
          "web" : "https://github.com/startsiden/startsiden-useragent"
       }
    },
-   "version" : "1.18",
+   "version" : "1.21",
    "x_contributors" : [
       "Andreas Marienborg <omega@palle.net>",
       "Arun Isarathiwat <arun@abctech-thailand.com>",
       "espizo <espen.borgen@startsiden.no>",
+      "Jacek Martuzalski <jmartuzalski@pl.sii.eu>",
+      "Jacek Martuzalski <martuzalski@gmail.com>",
       "Nicolas Mendoza <mendoza@pvv.ntnu.no>",
       "soracha <fai@abctech-thailand.com>",
       "Tore Aursand <toreau@gmail.com>"
    ],
-   "x_serialization_backend" : "Cpanel::JSON::XS version 3.0217"
+   "x_serialization_backend" : "Cpanel::JSON::XS version 3.0227"
 }
+

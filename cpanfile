@@ -11,9 +11,9 @@ requires 'List::Util', '1.42';
 requires 'Mojolicious', '7.07';
 requires 'POSIX';
 requires 'Readonly';
+requires 'Socket', '1.97';
 requires 'String::Truncate';
 requires 'Time::HiRes';
-requires 'Socket', '1.97';
 
 on build => sub {
     requires 'Class::Unload';
@@ -21,6 +21,7 @@ on build => sub {
     requires 'Module::Install::Debian';
     requires 'Module::Install';
     requires 'Test::Compile';
+    requires 'Test::Harness';
     requires 'Test::MockTime';
     requires 'Test::More';
     requires 'Time::HiRes';
