@@ -16,6 +16,7 @@ requires 'String::Truncate';
 requires 'Time::HiRes';
 
 on build => sub {
+    requires 'base', '2.23';
     requires 'Class::Unload';
     requires 'IO::Compress::Gzip';
     requires 'Module::Install::Debian';

@@ -34,7 +34,8 @@
             "Test::Harness" : "3.36",
             "Test::MockTime" : "0",
             "Test::More" : "0",
-            "Time::HiRes" : "0"
+            "Time::HiRes" : "0",
+            "base" : "2.23"
          }
       },
       "configure" : {
@@ -81,7 +82,7 @@
          "web" : "https://github.com/startsiden/startsiden-useragent"
       }
    },
-   "version" : "1.23",
+   "version" : "1.25",
    "x_contributors" : [
       "Andreas Marienborg <omega@palle.net>",
       "Arun Isarathiwat <arun@abctech-thailand.com>",
