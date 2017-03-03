@@ -13,6 +13,7 @@ use File::Path;
 use File::Spec;
 use List::Util 1.42;
 use Mojo::Base 'Mojo::UserAgent';
+use Mojo::File qw( path );
 use Mojo::Log;
 use Mojo::Transaction::HTTP;
 use Mojo::URL;
@@ -24,7 +25,7 @@ use Time::HiRes qw/time/;
 Readonly my $HTTP_OK => 200;
 Readonly my $HTTP_FILE_NOT_FOUND => 404;
 
-our $VERSION = '1.25';
+our $VERSION = '1.26';
 
 # TODO: Timeout, fallback
 # TODO: Expected result content (json etc)
@@ -359,7 +360,7 @@ sub _parse_local_file_res {
     my ($self, $url) = @_;
 
     my $headers;
-    my $body = Mojo::Util::slurp($url, 'binmode' => ':raw' );
+    my $body = path( $url )->slurp;
     my $code = $HTTP_OK;
     my $msg  = 'OK';
 

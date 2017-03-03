@@ -8,7 +8,7 @@ requires 'File::Basename';
 requires 'File::Path';
 requires 'File::Spec';
 requires 'List::Util', '1.42';
-requires 'Mojolicious', '7.07';
+requires 'Mojolicious', '7.27';
 requires 'POSIX';
 requires 'Readonly';
 requires 'Socket', '1.97';
