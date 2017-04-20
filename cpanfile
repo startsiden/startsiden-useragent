@@ -7,7 +7,7 @@ requires 'English';
 requires 'File::Basename';
 requires 'File::Path';
 requires 'File::Spec';
-requires 'List::Util';
+requires 'List::Util', '1.42';
 requires 'Mojolicious';
 requires 'POSIX';
 requires 'Readonly';

@@ -25,7 +25,7 @@ use Time::HiRes qw/time/;
 Readonly my $HTTP_OK => 200;
 Readonly my $HTTP_FILE_NOT_FOUND => 404;
 
-our $VERSION = '1.27';
+our $VERSION = '1.28';
 
 # TODO: Timeout, fallback
 # TODO: Expected result content (json etc)
