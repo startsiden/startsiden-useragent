@@ -60,11 +60,11 @@
             "File::Basename" : "0",
             "File::Path" : "0",
             "File::Spec" : "0",
-            "List::Util" : "1.42",
-            "Mojolicious" : "7.27",
+            "List::Util" : "0",
+            "Mojolicious" : "0",
             "POSIX" : "0",
             "Readonly" : "0",
-            "Socket" : "1.97",
+            "Socket" : "0",
             "String::Truncate" : "0",
             "Time::HiRes" : "0"
          }
@@ -95,4 +95,3 @@
    ],
    "x_serialization_backend" : "Cpanel::JSON::XS version 3.0227"
 }
-
